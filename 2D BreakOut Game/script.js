@@ -14,18 +14,26 @@ console.log(canvas.width, canvas.height);
 function ballParameters(){
   this.ballRadius=10;
   this.xAxis = canvas.width/2;
-  this.yAxis = canvas.height-30;
+  this.yAxis = canvas.height-10-this.ballRadius;
   this.dx = 6.5;
   this.dy = -6.5;
 }
 const BALL = new ballParameters();(canvas.height/2)/20;  
 
 function bricksParameter(){
-  this.brickRowCount = parseInt((canvas.width-200)/75);
-  this.brickColumnCount = parseInt((canvas.height/2-150)/20);
+  this.brickRowCount = parseInt((canvas.width-180)/75);
+  this.brickColumnCount = parseInt((canvas.height/2-150)/25);
+  if(canvas.width<=360 || canvas.height <=660)
+  {
+
+    this.brickRowCount = parseInt((canvas.width-180)/75);
+    this.brickColumnCount = parseInt((canvas.height/2-150)/25);
+  }
+  // this.brickRowCount = 1;
+  // this.brickColumnCount = 1;
   this.brickWidth = 75;
-  this.brickHeight = 20;
-  this.brickPadding = 0.2;
+  this.brickHeight = 25;
+  this.brickPadding = 0.5;
   this.brickOffsetTop = 100;
   this.brickOffsetLeft = 90;
   this.brickCount= 0;
@@ -47,7 +55,7 @@ let paddleColor="#fffeff";
 function gameParameter(){
   this.score = 0;
   this.lives = 2;
-  this.level = 1;
+  this.level = 2;
   this.temp=0;
 }
 const GAME = new  gameParameter();
@@ -121,7 +129,7 @@ function powerUps1(){
       if((BONUS.xl1+20>=PADDLE.paddleX && BONUS.xl1<=PADDLE.paddleX+PADDLE.paddleWidth) && (BONUS.yl1+40<=canvas.height && BONUS.yl1+40>=canvas.height-10))
       {
         lifeupSound.play();
-        GAME.lives++;
+        
         BONUS.statusl1=1;
         GAME.score+=20;
         BONUS.yl1=canvas.height;
@@ -147,7 +155,7 @@ function powerUps2(){
     if((BONUS.xl2+20>=PADDLE.paddleX && BONUS.xl2<=PADDLE.paddleX+PADDLE.paddleWidth) && (BONUS.yl2+40<=canvas.height && BONUS.yl2+40>=canvas.height-10))
     {
       lifeupSound.play();
-      GAME.lives++;
+      
       BONUS.statusl2=1;
       GAME.score+=20;
       BONUS.yl2=canvas.height;
@@ -164,12 +172,25 @@ function powerUps2(){
 
 
 let bricks = [];
-for(let c=0; c<BRICKS.brickColumnCount; c++) {
-  bricks[c] = [];
-  for(let r=0; r<BRICKS.brickRowCount; r++) {
-    bricks[c][r] = { x: 0, y: 0, status: 2 };
+function createBricks()
+{
+  for(let c=0; c<BRICKS.brickColumnCount; c++) {
+    bricks[c] = [];
+    for(let r=0; r<BRICKS.brickRowCount; r++) {
+      let random= Math.floor((Math.random() * 6) + 0);
+      bricks[c][r] = { x: 0, y: 0, status: 2,isPowerup:false};
+      if(random==2)
+      {
+        bricks[c][r]["isPowerup"]=true;
+      }
+      // else{
+      //   bricks[c][r][isPowerup]=false;
+      // }
+    }
   }
 }
+createBricks();
+
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
@@ -223,12 +244,9 @@ function touchHandler(e)
   {
     let relativeX = e.touches[0].clientX-canvas.offsetLeft;
     if(relativeX > 0 && relativeX < canvas.width) {
-      PADDLE.paddleX=e.touches[0].clientX-canvas.offsetLeft-PADDLE.paddleWidth/2;
-      
-      e.preventDefault();
-  }
-    
-
+    PADDLE.paddleX=e.touches[0].clientX-canvas.offsetLeft-PADDLE.paddleWidth/2; 
+    e.preventDefault();
+    }
   }
 }
 
@@ -276,13 +294,19 @@ function collisionDetection() {
                 GAME.score++;
                 BALL.dy = -BALL.dy;
                 b.status = 0;
+                // powerUps1(x,y)
                 BRICKS.brickCount++;
                 GAME.score++;
                 if(BRICKS.brickCount == BRICKS.brickRowCount*BRICKS.brickColumnCount) {
-                  alert("YOU WIN, CONGRATS!");
-                  GAME.level=2;
+                  // alert("YOU WIN, CONGRATS!");
+                  bricks=[];
+                createBricks();
+                BRICKS.brickCount=0;
+                GAME.level=2;
+                console.log(GAME.level);
+                  // GAME.temp=0;
                   // document.location.reload();
-                  draw();
+                  // draw();
                   
                 }
               }
@@ -296,58 +320,62 @@ function collisionDetection() {
 
 
  //level 2
-
-
-  if(GAME.level==2){
-    for(let column=0; column<BRICKS.brickColumnCount; column++) {
-      for(let row=0; row<BRICKS.brickRowCount; row++) {
-        let b = bricks[column][row];
-        if(b.status == 2) {
-          if(BALL.xAxis >= b.x && BALL.xAxis <= b.x+BRICKS.brickWidth && BALL.yAxis >= b.y && BALL.yAxis <= b.y+BRICKS.brickHeight) {
-            if(row==13)
+ if(GAME.level==2){
+  for(let column=0; column<BRICKS.brickColumnCount; column++) {
+    for(let row=0; row<BRICKS.brickRowCount; row++) {
+      let b = bricks[column][row];
+      if(b.status == 2) {
+        if(BALL.xAxis >= b.x && BALL.xAxis <= b.x+BRICKS.brickWidth && BALL.yAxis >= b.y && BALL.yAxis <= b.y+BRICKS.brickHeight) {
+          brickSound.play();
+          BALL.dy = -BALL.dy;
+          let temp=0;
+          if(row==13)
+          {
+            for(let i=0;i<BRICKS.brickColumnCount;i++)
             {
-              for(let i=0;i<BRICKS.brickColumnCount;i++)
-              {
-                let bt = bricks[i][row];
-                bt.status=0;
-                let bt1 = bricks[i][row-1];
-                bt.status=0;
-                let bt2 = bricks[i][row+1];
-                bt.status=0;
-
-              }
-              
+              let bt=bricks[i][row];
+              bt.status=0;
             }
-            brickSound.play();
-            BALL.dy = -BALL.dy;
-            if(b.status==2)
-            {
-              b.status = 1;
-            }
-            
-            GAME.score++;
+            temp=1;
           }
-        }else{
-          if(b.status == 1) {
-            if(BALL.xAxis-BALL.ballRadius >= b.x && BALL.xAxis+BALL.ballRadius <= b.x+BRICKS.brickWidth && BALL.yAxis+BALL.ballRadius>= b.y && BALL.yAxis-BALL.ballRadius <= b.y+BRICKS.brickHeight) {
-              brickExplosionSound.play();
-              GAME.score++;
-              BALL.dy = -BALL.dy;
-              b.status = 0;
-              BRICKS.brickCount++;
-              console.log(BRICKS.brickCount);
-              GAME.score++;
-              if(BRICKS.brickCount == BRICKS.brickRowCount*BRICKS.brickColumnCount) {
-               
-                GAME.level=3;
-              }
+          if(temp==0)
+          {
+            b.status = 1;
+          }
+          
+          GAME.score++;
+        }
+      }else{
+        if(b.status == 1) {
+          if(BALL.xAxis >= b.x && BALL.xAxis <= b.x+BRICKS.brickWidth && BALL.yAxis >= b.y && BALL.yAxis <= b.y+BRICKS.brickHeight) {
+            brickExplosionSound.play();
+            GAME.score++;
+            BALL.dy = -BALL.dy;
+            b.status = 0;
+            // powerUps1(x,y)
+            BRICKS.brickCount++;
+            GAME.score++;
+            if(BRICKS.brickCount == BRICKS.brickRowCount*BRICKS.brickColumnCount) {
+              // alert("YOU WIN, CONGRATS!");
+              bricks=[];
+            createBricks();
+            BRICKS.brickCount=0;
+            GAME.level=3;
+            console.log(GAME.level);
+              // GAME.temp=0;
+              // document.location.reload();
+              // draw();
+              
             }
           }
         }
-        
       }
+      
     }
   }
+}
+
+ 
 //level 3
   if(GAME.level==3){
     for(let column=0; column<BRICKS.brickColumnCount; column++) {
@@ -397,7 +425,7 @@ function collisionDetection() {
                 // }
                 GAME.score++;
                 if(BRICKS.brickCount == BRICKS.brickRowCount*BRICKS.brickColumnCount) {
-                  alert("YOU WIN, CONGRATS!");
+                  alert("YOU WIN, CONGRATS! leve 3");
                   document.location.reload();
                 }
             }
@@ -457,12 +485,19 @@ function drawBricks() {
           bricks[c][r].y = brickY;
             ctx.beginPath();
             let gradient = ctx.createRadialGradient(brickX, brickY, 23, brickX, brickY, 29);
-            gradient.addColorStop(0, '#8c3424');           
-            gradient.addColorStop(1, '#a23c2a');
-            ctx.fillStyle = gradient;
-            ctx.rect(brickX, brickY, BRICKS.brickWidth, BRICKS.brickHeight);
-            ctx.fill();
-            ctx.closePath(); 
+            if(bricks[c][r]["isPowerup"]==true)
+            {
+
+            }
+            else{
+              gradient.addColorStop(0, '#8c3424');           
+              gradient.addColorStop(1, '#a23c2a');
+              ctx.fillStyle = gradient;
+              ctx.rect(brickX, brickY, BRICKS.brickWidth, BRICKS.brickHeight);
+              ctx.fill();
+              ctx.closePath(); 
+            }
+            
         }
         else
         {
@@ -496,9 +531,9 @@ function drawBricks() {
           bricks[c][r].x = brickX;
           bricks[c][r].y = brickY;
           
-          if(r==0 ||c==0 || r>BRICKS.brickRowCount || c+1>BRICKS.brickColumnCount)
+          if(r==0 ||c==0 || r+1>BRICKS.brickRowCount || c+1>=BRICKS.brickColumnCount)
           {
-            if((r%2==0 && r!=0 )|| (c==0 && r==0) || (r == 0 && c+1>=BRICKS.brickColumnCount))
+            if((r%2==0 && r!=0 )|| (c==0 && r==0) || (r == 0 && c+1==BRICKS.brickColumnCount) || (r%2==0 && c+1>=BRICKS.brickColumnCount))
             {
 
             
@@ -701,6 +736,13 @@ function draw() {
   drawScore();
   drawLives();
   collisionDetection();
+  // if(GAME.temp==0)
+  // {
+  //   document.body.addEventListener('keypress', draw());
+  //   BALL.xAxis += BALL.dx;
+  //   BALL.yAxis += BALL.dy;
+  //   GAME.temp=1;
+  // }
   if(GAME.score>=3)
   {
     powerUps2();
@@ -717,7 +759,7 @@ function draw() {
   }
   // drawBrickForLive();
   
- 
+  
   if(BALL.xAxis + BALL.dx >= canvas.width-BALL.ballRadius || BALL.xAxis + BALL.dx <= BALL.ballRadius) {
     wallSound.play();
     BALL.dx = -(BALL.dx);
@@ -726,34 +768,50 @@ function draw() {
     wallSound.play();
     BALL.dy = -BALL.dy;
   }
-  else if(BALL.yAxis + BALL.dy >= canvas.height-BALL.ballRadius) {
-    if(BALL.xAxis+BALL.ballRadius>= PADDLE.paddleX && BALL.xAxis-BALL.ballRadius < PADDLE.paddleX + PADDLE.paddleWidth/2 ) {
-      paddleSound.play();
-      BALL.dy = -BALL.dy;
-      if(BALL.dx>0 && BALL.dy<0 )
-      {
-        BALL.dx= -BALL.dx;
-      }
+  else if(BALL.yAxis + BALL.dy >= canvas.height-BALL.ballRadius) 
+  {
+    // if(BALL.xAxis+BALL.ballRadius>= PADDLE.paddleX && BALL.xAxis-BALL.ballRadius < PADDLE.paddleX + PADDLE.paddleWidth/2 ) 
+    // {
+    //   paddleSound.play();
+    //   BALL.dy = -BALL.dy;
+    //   if(BALL.dx>0 && BALL.dy<0 )
+    //   {
+    //     BALL.dx= -BALL.dx;
+    //   }
       
-    }
-    else if(BALL.xAxis >= PADDLE.paddleX+PADDLE.paddleWidth/2 && BALL.xAxis-BALL.ballRadius <= PADDLE.paddleX + PADDLE.paddleWidth)
+    // }
+    // else if(BALL.xAxis >= PADDLE.paddleX+PADDLE.paddleWidth/2 && BALL.xAxis-BALL.ballRadius <= PADDLE.paddleX + PADDLE.paddleWidth)
+    // {
+    //   paddleSound.play();
+    //   BALL.dy = -BALL.dy; 
+    //   if(BALL.dy<0 && BALL.dx<0)
+    //   {
+    //     BALL.dx= -BALL.dx;
+    //   }
+    // }
+
+    if(BALL.xAxis+BALL.ballRadius>= PADDLE.paddleX && BALL.xAxis-BALL.ballRadius < PADDLE.paddleX + PADDLE.paddleWidth )
     {
-      paddleSound.play();
-      BALL.dy = -BALL.dy; 
-      if(BALL.dy<0 && BALL.dx<0)
-      {
-        BALL.dx= -BALL.dx;
-      }
-     
+      let collidePoint = BALL.xAxis - (PADDLE.paddleX+ PADDLE.paddleWidth/ 2);
+      collidePoint /= PADDLE.paddleWidth/2;
+  
+      let angle = collidePoint * Math.PI / 3;
+  
+      BALL.dx = 8* Math.sin(angle);
+      BALL.dy = -BALL.dy
+       
     }
-    else {
+    else
+    {
       GAME.lives--;
      
-      if(!GAME.lives) {
+      if(!GAME.lives) 
+      {
         alert("Game Over");
         document.location.reload();
       }
-      else {
+      else 
+      {
         if(GAME.lives>0)
         {
           alert("Live remaining: "+GAME.lives);
@@ -767,6 +825,8 @@ function draw() {
       }
     }
   }
+
+
 
   if(PADDLE.rightPressed && PADDLE.paddleX < canvas.width-PADDLE.paddleWidth) {
     PADDLE.paddleX += 7;
@@ -782,22 +842,16 @@ function draw() {
   //   temp=-1;
   // }
 
-//   if(GAME.temp==0)
-// {
-//   document.addEventListener('keypress', draw());
+ 
+// if(GAME.temp==1){
 //   BALL.xAxis += BALL.dx;
 //   BALL.yAxis += BALL.dy;
-//   GAME.temp=1;
+//   // requestAnimationFrame(draw);
 // }
-// else{
-//   BALL.xAxis += BALL.dx;
-//   BALL.yAxis += BALL.dy;
-//   requestAnimationFrame(draw);
-// }
-
+requestAnimationFrame(draw);
 BALL.xAxis += BALL.dx;
   BALL.yAxis += BALL.dy;
-  requestAnimationFrame(draw);
+//   requestAnimationFrame(draw);
   
   
 }
