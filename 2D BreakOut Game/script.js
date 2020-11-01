@@ -72,7 +72,7 @@ let paddleColor = "#fffeff";
 function gameParameter() {
   this.score = 0;
   this.lives = 2;
-  this.level = 2;
+  this.level = 1;
   this.temp = 0;
   this.timer;
   this.powerupFunction = 0;
@@ -656,12 +656,8 @@ function drawBricks() {
           let brickY = (c * (BRICKS.brickHeight + BRICKS.brickPadding)) + BRICKS.brickOffsetTop;
           bricks[c][r].x = brickX;
           bricks[c][r].y = brickY;
-          ctx.beginPath();
-          let gradient = ctx.createRadialGradient(brickX, brickY, 23, brickX, brickY, 29);
-          if (bricks[c][r]["isPowerup"] == true) {
-
-          }
-          else {
+          
+          
             ctx.beginPath();
             let gradient = ctx.createRadialGradient(brickX, brickY, 23, brickX, brickY, 29);
             gradient.addColorStop(0, '#8c3424');
@@ -670,7 +666,7 @@ function drawBricks() {
             ctx.rect(brickX, brickY, BRICKS.brickWidth, BRICKS.brickHeight);
             ctx.fill();
             ctx.closePath();
-          }
+          
 
         }
         else {
