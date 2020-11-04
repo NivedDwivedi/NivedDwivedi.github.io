@@ -1,0 +1,97 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+.container{
+    min-height: 100vh;
+    min-width: 100vw;
+    background-color: aqua;
+    display: flex;
+    
+    flex-direction: column;
+}
+.Header{
+    background-color: brown;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0;
+    
+}
+.Header h1{
+    padding: 16px;
+    color: floralwhite;
+
+}
+
+ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333333;
+  }
+  
+  li {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+  }
+  
+  li:hover {
+    background-color: #111111;
+  }
+
+.display-container{
+    background-color: #9f2a2a ;
+    display: flex;
+    flex-direction: row;
+    flex: 0;
+    /* Should be removed. Only for demonstration */
+}
+.output-class{
+    float: left;
+    width: 50%;
+    padding: 10px;
+    height: 300px;
+    margin-top: 100px;
+    margin-bottom: 60px;
+}
+
+.display-container .output-class button{
+    display: inline-block;
+    padding: 16px;
+    margin: 5px;
+    width: 40%;
+    background-color: green;
+    color: whitesmoke;
+}
+
+.display-container .output-class button:active{
+    background-color: darkgreen;
+    color: thistle;
+}
+label{
+    color: whitesmoke;
+}
+.canvas-class{
+    float: left;
+    width: 50%;
+    padding: 10px;
+    height: 300px;
+}
+
+.display-container:after{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+canvas{
+    background-color: darkgrey;
+    margin-top: 100px;
+}
