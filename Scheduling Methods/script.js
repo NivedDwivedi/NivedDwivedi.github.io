@@ -5,11 +5,7 @@ const ctx = canvas.getContext("2d");
 canvas.width=600;
 canvas.height=300;
 
-// function canvasParameters(){
-//     this.height=canvasHeight;
-//     this.width= canvasWidth;
-// }
-// const Canvas = new canvasParameters(); 
+
 
 function box(){
     this.dx=3;
@@ -29,11 +25,15 @@ function reset(){
     Box.status=1;
     i=0;
     start = Date.now();
-    size=0;
+    size=0; 
 }
 
-
-
+let id;
+function methodSelector(btn){
+  id=btn.id;  
+  console.log(btn.id);
+  mainTask(id);
+}
 
 function draw()
 {
@@ -41,8 +41,7 @@ function draw()
     
     if(Box.y+Box.dy+size>canvas.height || Box.y+Box.dy<0)
     {
-        Box.dy= -Box.dy;
-        
+        Box.dy= -Box.dy;  
     }
     ctx.beginPath();
     ctx.rect(Box.x,Box.y, canvas.width, size);
@@ -54,88 +53,56 @@ function draw()
 }
 
 
-function rafFunction() {
+
+function mainTask(){
   do {
     i++;
   } while (i % 1e6 != 0)
 
   if (i === 1e9) {
-
-    
-    document.getElementById('label1').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
+    switch(id)
+    {
+      case 'btn1':
+        document.getElementById('label1').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
+        break;
+      case 'btn2':
+        document.getElementById('label2').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
+        break;
+      case 'btn3':
+        document.getElementById('label3').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
+        break;
+      case 'btn4':
+        document.getElementById('label4').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
+        break;
+    }
     Box.status=0;
   } else {
    if(Box.status==0)
    {
     reset();
    }
-
-    draw();
-    document.getElementById("label1").innerHTML = `Executing Task: ${i}`;
-    requestAnimationFrame(rafFunction);
-  }
-}
-
-
-function setTimeoutFunction() {
-    do {
-      i++;
-    } while (i % 1e6 != 0)
-  
-    if (i === 1e9) {
-      document.getElementById('label2').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
-      Box.status=0;
-    } else {
-        if(Box.status==0)
-        {
-         reset();
-        }
-      draw();
+   draw();
+   switch(id)
+   {
+     case 'btn1':
+      document.getElementById("label1").innerHTML = `Executing Task: ${i}`;
+      requestAnimationFrame(mainTask);
+      break;
+    case 'btn2':
       document.getElementById("label2").innerHTML = `Executing Task: ${i}`;
-      setTimeout(setTimeoutFunction);
-    }
-  }
-
-
-
-  function promiseFunction() {
-    do {
-      i++;
-    } while (i % 1e6 != 0)
-  
-    if (i === 1e9) {
-      document.getElementById('label3').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
-      Box.status=0;
-    } else {
-        if(Box.status==0)
-        {
-         reset();
-        }
-      draw();
+      setTimeout(mainTask);
+      break;
+    case 'btn3':
       document.getElementById("label3").innerHTML = `Executing Task: ${i}`;
-      Promise.resolve().then(promiseFunction);
-    }
-  }
-
-
-
-  function microFunction() {
-    do {
-      i++;
-    } while (i % 1e6 != 0)
-  
-    if (i === 1e9) {
-      document.getElementById('label4').innerHTML = `Total Time: ${(Date.now() - start)/1000} sec`;
-      Box.status=0;
-    } else {
-        if(Box.status==0)
-        {
-         reset();
-        }
-      draw();
+      Promise.resolve().then(mainTask);
+      break;
+    case 'btn4':
       document.getElementById("label4").innerHTML = `Executing Task: ${i}`;
-      queueMicrotask(microFunction);
-    }
+      queueMicrotask(mainTask);
+      break;
+   }
+
   }
 
+}
 

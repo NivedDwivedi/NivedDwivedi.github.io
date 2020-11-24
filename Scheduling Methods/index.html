@@ -20,10 +20,10 @@
                 
                 <div class="output-class">
                 <div class="buttons"> 
-                    <button id="btn1" onclick="rafFunction()">RequestAnimationFrame</button> <label id="label1">TimeTaken</label><br>
-                    <button id="btn2" onclick="setTimeoutFunction()">SetTimeOut</button> <label id="label2">TimeTaken</label><br>
-                    <button id="btn3" onclick="promiseFunction()">Promise</button> <label id="label3">TimeTaken</label><br>
-                    <button id="btn4" onclick="microFunction()">QueueMicroTask</button><label id="label4">TimeTaken</label><br>
+                    <button id="btn1" onclick="methodSelector(this)">RequestAnimationFrame</button> <label id="label1">TimeTaken</label><br>
+                    <button id="btn2" onclick="methodSelector(this)">SetTimeOut</button> <label id="label2">TimeTaken</label><br>
+                    <button id="btn3" onclick="methodSelector(this)">Promise</button> <label id="label3">TimeTaken</label><br>
+                    <button id="btn4" onclick="methodSelector(this)">QueueMicroTask</button><label id="label4">TimeTaken</label><br>
                 </div>
                 </div>
                 <div class="canvas-class">
@@ -31,7 +31,6 @@
                 </div>
             </div>
         </div>
-        <!-- <canvas id="mycanvas" style="background:black;"></canvas> -->
         <script  src="script.js"></script>
     </body>
 </html>
